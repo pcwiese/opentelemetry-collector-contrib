@@ -30,6 +30,7 @@ import (
 	"go.opentelemetry.io/collector/component/componenterror"
 	"go.opentelemetry.io/collector/config/configgrpc"
 	"go.opentelemetry.io/collector/config/configmodels"
+	"go.opentelemetry.io/collector/config/configtls"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/consumer/pdata"
 	"go.opentelemetry.io/collector/exporter/otlpexporter"
@@ -103,6 +104,9 @@ func newTraceExporter(logger *zap.Logger, ip string, peerPort int) component.Tra
 		},
 		GRPCClientSettings: configgrpc.GRPCClientSettings{
 			Endpoint: ip + ":" + strconv.Itoa(peerPort),
+			TLSSetting: configtls.TLSClientSetting{
+				Insecure: true,
+			},
 		},
 	}
 
