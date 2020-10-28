@@ -96,18 +96,19 @@ func newTraceProcessor(logger *zap.Logger, nextConsumer consumer.TracesConsumer,
 
 func newTraceExporter(logger *zap.Logger, ip string, peerPort int) component.TraceExporter {
 	factory := otlpexporter.NewFactory()
-	config := factory.CreateDefaultConfig()
-	config.(*otlpexporter.Config).ExporterSettings = configmodels.ExporterSettings{
-		NameVal: "otlp",
-		TypeVal: "otlp",
-	}
-	config.(*otlpexporter.Config).GRPCClientSettings = configgrpc.GRPCClientSettings{
-		Endpoint: ip + ":" + strconv.Itoa(peerPort),
+	otlpConfig := &otlpexporter.Config{
+		ExporterSettings: configmodels.ExporterSettings{
+			NameVal: "otlp",
+			TypeVal: configmodels.Type("otlp"),
+		},
+		GRPCClientSettings: configgrpc.GRPCClientSettings{
+			Endpoint: ip + ":" + strconv.Itoa(peerPort),
+		},
 	}
 
-	logger.Info("Creating new exporter for", zap.String("PeerIP", ip))
+	logger.Info("Creating new exporter for", zap.String("PeerIP", ip), zap.Int("PeerPort", peerPort))
 	params := component.ExporterCreateParams{Logger: logger}
-	exporter, err := factory.CreateTraceExporter(context.Background(), params, config)
+	exporter, err := factory.CreateTraceExporter(context.Background(), params, otlpConfig)
 	if err != nil {
 		logger.Fatal("Could not create span exporter", zap.Error(err))
 		return nil
@@ -342,12 +343,22 @@ func (ap *aggregatingProcessor) ConsumeTraces(ctx context.Context, td pdata.Trac
 	}
 
 	for k, batch := range batches {
+		if len(batch) == 0 {
+			ap.logger.Debug("Empty batch. Skipping")
+			continue
+		}
+
 		curIP := peersSorted[k]
 		if curIP == ap.selfIP {
 			batch = append(batch, noHashBatch...)
 			toSend := prepareTraceBatch(batch)
 			ap.logger.Debug("Processing batch locally", zap.Int("Batch-size", len(batch)))
-			ap.nextConsumer.ConsumeTraces(ctx, toSend)
+			err := ap.nextConsumer.ConsumeTraces(ctx, toSend)
+			if err != nil {
+				ap.logger.Error("Error consuming trace locally", zap.Error(err))
+				return err
+			}
+
 			continue
 		} else {
 			// track metrics for forwarded spans
@@ -356,7 +367,11 @@ func (ap *aggregatingProcessor) ConsumeTraces(ctx context.Context, td pdata.Trac
 
 		ap.logger.Debug("Sending batch to peer", zap.String("PeerIP", curIP), zap.Int("Batch-size", len(batch)))
 		toSend := prepareTraceBatch(batch)
-		ap.collectorPeers[curIP].ConsumeTraces(ctx, toSend)
+		err := ap.collectorPeers[curIP].ConsumeTraces(ctx, toSend)
+		if err != nil {
+			ap.logger.Error("Error consuming trace on peer", zap.String("PeerIP", curIP), zap.Error(err))
+			return err
+		}
 	}
 
 	return nil
