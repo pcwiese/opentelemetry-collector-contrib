@@ -39,7 +39,7 @@ func newRingMemberQuerier(logger *zap.Logger, peerDiscoveryName string) ringMemb
 }
 
 func (d *dnsClient) getMembers() []string {
-	d.logger.Debug("Pooling a dns endpoint")
+	d.logger.Debug("Polling a dns endpoint")
 	// poll a dns endpoint
 	ips, err := net.LookupIP(d.peerDiscoveryName)
 	if err != nil {

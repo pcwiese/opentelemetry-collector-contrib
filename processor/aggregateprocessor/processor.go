@@ -32,7 +32,7 @@ import (
 	"go.opentelemetry.io/collector/config/configmodels"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/consumer/pdata"
-	"go.opentelemetry.io/collector/exporter/opencensusexporter"
+	"go.opentelemetry.io/collector/exporter/otlpexporter"
 	"go.uber.org/zap"
 )
 
@@ -95,13 +95,13 @@ func newTraceProcessor(logger *zap.Logger, nextConsumer consumer.TracesConsumer,
 }
 
 func newTraceExporter(logger *zap.Logger, ip string, peerPort int) component.TraceExporter {
-	factory := opencensusexporter.NewFactory()
+	factory := otlpexporter.NewFactory()
 	config := factory.CreateDefaultConfig()
-	config.(*opencensusexporter.Config).ExporterSettings = configmodels.ExporterSettings{
-		NameVal: "opencensus",
-		TypeVal: "opencensus",
+	config.(*otlpexporter.Config).ExporterSettings = configmodels.ExporterSettings{
+		NameVal: "otlp",
+		TypeVal: "otlp",
 	}
-	config.(*opencensusexporter.Config).GRPCClientSettings = configgrpc.GRPCClientSettings{
+	config.(*otlpexporter.Config).GRPCClientSettings = configgrpc.GRPCClientSettings{
 		Endpoint: ip + ":" + strconv.Itoa(peerPort),
 	}
 
@@ -227,7 +227,7 @@ func externalIP() (string, error) {
 			return ip.String(), nil
 		}
 	}
-	return "", errors.New("are you connected to the network?")
+	return "", errors.New("Are you connected to the network?")
 }
 
 // Copied from github.com/dgryski/go-jump/blob/master/jump.go
@@ -274,7 +274,7 @@ func (ap *aggregatingProcessor) ConsumeTraces(ctx context.Context, td pdata.Trac
 	})
 
 	if td.SpanCount() == 0 {
-		return fmt.Errorf("empty batch")
+		return fmt.Errorf("Empty batch")
 	}
 
 	stats.Record(ctx, statCountSpansReceived.M(int64(td.SpanCount())))
@@ -287,6 +287,7 @@ func (ap *aggregatingProcessor) ConsumeTraces(ctx context.Context, td pdata.Trac
 	for k := range ap.collectorPeers {
 		peersSorted = append(peersSorted, k)
 	}
+
 	natsort.Sort(peersSorted)
 	ap.logger.Debug("Printing member list", zap.Strings("Members", peersSorted))
 
@@ -302,28 +303,38 @@ func (ap *aggregatingProcessor) ConsumeTraces(ctx context.Context, td pdata.Trac
 	for i := 0; i < td.ResourceSpans().Len(); i++ {
 		resourcespan := td.ResourceSpans().At(i)
 		if resourcespan.IsNil() {
+			ap.logger.Debug("Empty resource span. Skipping")
 			continue
 		}
 
 		for j := 0; j < resourcespan.InstrumentationLibrarySpans().Len(); j++ {
 			ilspan := resourcespan.InstrumentationLibrarySpans().At(j)
 			if ilspan.IsNil() {
+				ap.logger.Debug("Empty instrumentation library span. Skipping")
 				continue
 			}
 
 			for k := 0; k < ilspan.Spans().Len(); k++ {
 				span := ilspan.Spans().At(k)
 				if span.IsNil() {
+					ap.logger.Debug("Empty span. Skipping")
 					continue
 				}
 
 				memberNum := jumpHash(fingerprint(span.TraceID().Bytes()), len(peersSorted))
-				ap.logger.Debug("", zap.Int("memberNum", int(memberNum)))
 				if memberNum == -1 {
 					// Any spans having a hash error -> self processed
+					ap.logger.Debug("Adding span to self due to hash error", zap.String("TraceID", span.TraceID().HexString()))
 					noHashBatch = append(noHashBatch, &span)
 				} else {
 					// Append this span to the batch of that member
+					curIP := peersSorted[memberNum]
+					if curIP == ap.selfIP {
+						ap.logger.Debug("Adding span to self", zap.String("TraceID", span.TraceID().HexString()))
+					} else {
+						ap.logger.Debug("Adding span to peer", zap.String("TraceID", span.TraceID().HexString()), zap.String("PeerIP", curIP))
+					}
+
 					batches[memberNum] = append(batches[memberNum], &span)
 				}
 			}
@@ -332,17 +343,18 @@ func (ap *aggregatingProcessor) ConsumeTraces(ctx context.Context, td pdata.Trac
 
 	for k, batch := range batches {
 		curIP := peersSorted[k]
-		ap.logger.Debug("currIP", zap.String("CurIP", curIP), zap.String("Self-IP", ap.selfIP))
 		if curIP == ap.selfIP {
 			batch = append(batch, noHashBatch...)
 			toSend := prepareTraceBatch(batch)
+			ap.logger.Debug("Processing batch locally", zap.Int("Batch-size", len(batch)))
 			ap.nextConsumer.ConsumeTraces(ctx, toSend)
 			continue
 		} else {
 			// track metrics for forwarded spans
 			stats.Record(ctx, statCountSpansForwarded.M(int64(len(batch))))
 		}
-		ap.logger.Debug("Sending batch to collector peer", zap.String("PeerIP", curIP), zap.Int("Batch-size", len(batch)))
+
+		ap.logger.Debug("Sending batch to peer", zap.String("PeerIP", curIP), zap.Int("Batch-size", len(batch)))
 		toSend := prepareTraceBatch(batch)
 		ap.collectorPeers[curIP].ConsumeTraces(ctx, toSend)
 	}
