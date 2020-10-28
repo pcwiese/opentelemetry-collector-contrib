@@ -15,7 +15,7 @@
 package aggregateprocessor
 
 import (
-	"github.com/open-telemetry/opentelemetry-collector/config/configmodels"
+	"go.opentelemetry.io/collector/config/configmodels"
 )
 
 // Config holds configuration settings for this processor to discover collector peers

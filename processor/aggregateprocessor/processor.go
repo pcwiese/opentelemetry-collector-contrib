@@ -24,18 +24,16 @@ import (
 	"sync"
 	"time"
 
-	"go.opencensus.io/stats"
-	"go.uber.org/zap"
-
-	v1 "github.com/census-instrumentation/opencensus-proto/gen-go/trace/v1"
 	"github.com/facette/natsort"
-	"github.com/open-telemetry/opentelemetry-collector/component"
-	"github.com/open-telemetry/opentelemetry-collector/config/configgrpc"
-	"github.com/open-telemetry/opentelemetry-collector/config/configmodels"
-	"github.com/open-telemetry/opentelemetry-collector/consumer"
-	"github.com/open-telemetry/opentelemetry-collector/consumer/consumerdata"
-	"github.com/open-telemetry/opentelemetry-collector/exporter/opencensusexporter"
-	"github.com/open-telemetry/opentelemetry-collector/oterr"
+	"go.opencensus.io/stats"
+	"go.opentelemetry.io/collector/component"
+	"go.opentelemetry.io/collector/component/componenterror"
+	"go.opentelemetry.io/collector/config/configgrpc"
+	"go.opentelemetry.io/collector/config/configmodels"
+	"go.opentelemetry.io/collector/consumer"
+	"go.opentelemetry.io/collector/consumer/pdata"
+	"go.opentelemetry.io/collector/exporter/opencensusexporter"
+	"go.uber.org/zap"
 )
 
 // aggregatingProcessor is the component that fowards spans to collector peers
@@ -46,7 +44,7 @@ type aggregatingProcessor struct {
 	// member lock
 	lock sync.RWMutex
 	// nextConsumer
-	nextConsumer consumer.TraceConsumerOld
+	nextConsumer consumer.TracesConsumer
 	// logger
 	logger *zap.Logger
 	// self member IP
@@ -58,14 +56,14 @@ type aggregatingProcessor struct {
 	// ticker to call ring.GetState() and sync member list
 	memberSyncTicker tTicker
 	// exporters for each of the collector peers
-	collectorPeers map[string]component.TraceExporterOld
+	collectorPeers map[string]component.TraceExporter
 }
 
-var _ component.TraceProcessorOld = (*aggregatingProcessor)(nil)
+var _ component.TraceProcessor = (*aggregatingProcessor)(nil)
 
-func newTraceProcessor(logger *zap.Logger, nextConsumer consumer.TraceConsumerOld, cfg *Config) (component.TraceProcessorOld, error) {
+func newTraceProcessor(logger *zap.Logger, nextConsumer consumer.TracesConsumer, cfg *Config) (component.TraceProcessor, error) {
 	if nextConsumer == nil {
-		return nil, oterr.ErrNilNextConsumer
+		return nil, componenterror.ErrNilNextConsumer
 	}
 
 	if cfg.PeerDiscoveryDNSName == "" {
@@ -79,7 +77,7 @@ func newTraceProcessor(logger *zap.Logger, nextConsumer consumer.TraceConsumerOl
 	ap := &aggregatingProcessor{
 		nextConsumer:   nextConsumer,
 		logger:         logger,
-		collectorPeers: make(map[string]component.TraceExporterOld),
+		collectorPeers: make(map[string]component.TraceExporter),
 		peerPort:       cfg.PeerPort,
 	}
 
@@ -96,19 +94,20 @@ func newTraceProcessor(logger *zap.Logger, nextConsumer consumer.TraceConsumerOl
 	return ap, nil
 }
 
-func newTraceExporter(logger *zap.Logger, ip string, peerPort int) component.TraceExporterOld {
-	factory := &opencensusexporter.Factory{}
+func newTraceExporter(logger *zap.Logger, ip string, peerPort int) component.TraceExporter {
+	factory := opencensusexporter.NewFactory()
 	config := factory.CreateDefaultConfig()
 	config.(*opencensusexporter.Config).ExporterSettings = configmodels.ExporterSettings{
 		NameVal: "opencensus",
 		TypeVal: "opencensus",
 	}
-	config.(*opencensusexporter.Config).GRPCSettings = configgrpc.GRPCSettings{
+	config.(*opencensusexporter.Config).GRPCClientSettings = configgrpc.GRPCClientSettings{
 		Endpoint: ip + ":" + strconv.Itoa(peerPort),
 	}
 
 	logger.Info("Creating new exporter for", zap.String("PeerIP", ip))
-	exporter, err := factory.CreateTraceExporter(logger, config)
+	params := component.ExporterCreateParams{Logger: logger}
+	exporter, err := factory.CreateTraceExporter(context.Background(), params, config)
 	if err != nil {
 		logger.Fatal("Could not create span exporter", zap.Error(err))
 		return nil
@@ -252,7 +251,20 @@ func fingerprint(b []byte) uint64 {
 	return hash.Sum64()
 }
 
-func (ap *aggregatingProcessor) ConsumeTraceData(ctx context.Context, td consumerdata.TraceData) error {
+func prepareTraceBatch(spans []*pdata.Span) pdata.Traces {
+	traceTd := pdata.NewTraces()
+	traceTd.ResourceSpans().Resize(1)
+	rs := traceTd.ResourceSpans().At(0)
+	rs.Resource().InitEmpty()
+	rs.InstrumentationLibrarySpans().Resize(1)
+	ils := rs.InstrumentationLibrarySpans().At(0)
+	for _, span := range spans {
+		ils.Spans().Append(*span)
+	}
+	return traceTd
+}
+
+func (ap *aggregatingProcessor) ConsumeTraces(ctx context.Context, td pdata.Traces) error {
 	// Start member sync
 	ap.start.Do(func() {
 		ap.logger.Info("First span received, starting member sync timer")
@@ -261,10 +273,11 @@ func (ap *aggregatingProcessor) ConsumeTraceData(ctx context.Context, td consume
 		ap.memberSyncTicker.Start(10000 * time.Millisecond) // 10s
 	})
 
-	if td.Spans == nil {
+	if td.SpanCount() == 0 {
 		return fmt.Errorf("empty batch")
 	}
-	stats.Record(ctx, statCountSpansReceived.M(int64(len(td.Spans))))
+
+	stats.Record(ctx, statCountSpansReceived.M(int64(td.SpanCount())))
 
 	ap.lock.RLock()
 	defer ap.lock.RUnlock()
@@ -278,40 +291,60 @@ func (ap *aggregatingProcessor) ConsumeTraceData(ctx context.Context, td consume
 	ap.logger.Debug("Printing member list", zap.Strings("Members", peersSorted))
 
 	// build batches for every member
-	var batches [][]*v1.Span
+	var batches [][]*pdata.Span
 	for p := 0; p < len(peersSorted); p++ {
-		batches = append(batches, make([]*v1.Span, 0))
+		batches = append(batches, make([]*pdata.Span, 0))
 	}
 
 	// Should ideally be empty
-	noHashBatch := []*v1.Span{}
+	noHashBatch := []*pdata.Span{}
 
-	for _, span := range td.Spans {
-		memberNum := jumpHash(fingerprint(span.TraceId), len(peersSorted))
-		ap.logger.Debug("", zap.Int("memberNum", int(memberNum)))
-		if memberNum == -1 {
-			// Any spans having a hash error -> self processed
-			noHashBatch = append(noHashBatch, span)
-		} else {
-			// Append this span to the batch of that member
-			batches[memberNum] = append(batches[memberNum], span)
+	for i := 0; i < td.ResourceSpans().Len(); i++ {
+		resourcespan := td.ResourceSpans().At(i)
+		if resourcespan.IsNil() {
+			continue
+		}
+
+		for j := 0; j < resourcespan.InstrumentationLibrarySpans().Len(); j++ {
+			ilspan := resourcespan.InstrumentationLibrarySpans().At(j)
+			if ilspan.IsNil() {
+				continue
+			}
+
+			for k := 0; k < ilspan.Spans().Len(); k++ {
+				span := ilspan.Spans().At(k)
+				if span.IsNil() {
+					continue
+				}
+
+				memberNum := jumpHash(fingerprint(span.TraceID().Bytes()), len(peersSorted))
+				ap.logger.Debug("", zap.Int("memberNum", int(memberNum)))
+				if memberNum == -1 {
+					// Any spans having a hash error -> self processed
+					noHashBatch = append(noHashBatch, &span)
+				} else {
+					// Append this span to the batch of that member
+					batches[memberNum] = append(batches[memberNum], &span)
+				}
+			}
 		}
 	}
 
 	for k, batch := range batches {
 		curIP := peersSorted[k]
+		ap.logger.Debug("currIP", zap.String("CurIP", curIP), zap.String("Self-IP", ap.selfIP))
 		if curIP == ap.selfIP {
 			batch = append(batch, noHashBatch...)
-			toSend := consumerdata.TraceData{Spans: batch}
-			ap.nextConsumer.ConsumeTraceData(ctx, toSend)
+			toSend := prepareTraceBatch(batch)
+			ap.nextConsumer.ConsumeTraces(ctx, toSend)
 			continue
 		} else {
 			// track metrics for forwarded spans
 			stats.Record(ctx, statCountSpansForwarded.M(int64(len(batch))))
 		}
 		ap.logger.Debug("Sending batch to collector peer", zap.String("PeerIP", curIP), zap.Int("Batch-size", len(batch)))
-		toSend := consumerdata.TraceData{Spans: batch}
-		ap.collectorPeers[curIP].ConsumeTraceData(ctx, toSend)
+		toSend := prepareTraceBatch(batch)
+		ap.collectorPeers[curIP].ConsumeTraces(ctx, toSend)
 	}
 
 	return nil
@@ -322,12 +355,12 @@ func (ap *aggregatingProcessor) GetCapabilities() component.ProcessorCapabilitie
 }
 
 // Start is invoked during service startup.
-func (ap *aggregatingProcessor) Start(host component.Host) error {
+func (ap *aggregatingProcessor) Start(context.Context, component.Host) error {
 	return nil
 }
 
 // Shutdown is invoked during service shutdown.
-func (ap *aggregatingProcessor) Shutdown() error {
+func (ap *aggregatingProcessor) Shutdown(_ context.Context) error {
 	ap.memberSyncTicker.Stop()
 	return nil
 }

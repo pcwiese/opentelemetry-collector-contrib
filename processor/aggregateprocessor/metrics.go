@@ -17,9 +17,7 @@ package aggregateprocessor
 import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
-
-	"github.com/open-telemetry/opentelemetry-collector/internal/collector/telemetry"
-	"github.com/open-telemetry/opentelemetry-collector/obsreport"
+	"go.opentelemetry.io/collector/obsreport"
 )
 
 // Variables related to metrics specific to tail sampling.
@@ -29,7 +27,7 @@ var (
 )
 
 // MetricViews return the metrics views according to given telemetry level.
-func MetricViews(level telemetry.Level) []*view.View {
+func MetricViews() []*view.View {
 
 	countSpansRcvdView := &view.View{
 		Name:        statCountSpansReceived.Name(),
@@ -50,5 +48,5 @@ func MetricViews(level telemetry.Level) []*view.View {
 		countSpansFwdView,
 	}
 
-	return obsreport.ProcessorMetricViews(typeStr, legacyViews)
+	return obsreport.ProcessorMetricViews(string(typeStr), legacyViews)
 }
