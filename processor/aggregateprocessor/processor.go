@@ -57,12 +57,12 @@ type aggregatingProcessor struct {
 	// ticker to call ring.GetState() and sync member list
 	memberSyncTicker tTicker
 	// exporters for each of the collector peers
-	collectorPeers map[string]component.TraceExporter
+	collectorPeers map[string]component.TracesExporter
 }
 
-var _ component.TraceProcessor = (*aggregatingProcessor)(nil)
+var _ component.TracesProcessor = (*aggregatingProcessor)(nil)
 
-func newTraceProcessor(logger *zap.Logger, nextConsumer consumer.TracesConsumer, cfg *Config) (component.TraceProcessor, error) {
+func newTraceProcessor(logger *zap.Logger, nextConsumer consumer.TracesConsumer, cfg *Config) (component.TracesProcessor, error) {
 	if nextConsumer == nil {
 		return nil, componenterror.ErrNilNextConsumer
 	}
@@ -78,7 +78,7 @@ func newTraceProcessor(logger *zap.Logger, nextConsumer consumer.TracesConsumer,
 	ap := &aggregatingProcessor{
 		nextConsumer:   nextConsumer,
 		logger:         logger,
-		collectorPeers: make(map[string]component.TraceExporter),
+		collectorPeers: make(map[string]component.TracesExporter),
 		peerPort:       cfg.PeerPort,
 	}
 
@@ -95,7 +95,7 @@ func newTraceProcessor(logger *zap.Logger, nextConsumer consumer.TracesConsumer,
 	return ap, nil
 }
 
-func newTraceExporter(logger *zap.Logger, ip string, peerPort int) component.TraceExporter {
+func newTraceExporter(logger *zap.Logger, ip string, peerPort int) component.TracesExporter {
 	factory := otlpexporter.NewFactory()
 	otlpConfig := &otlpexporter.Config{
 		ExporterSettings: configmodels.ExporterSettings{
@@ -112,7 +112,7 @@ func newTraceExporter(logger *zap.Logger, ip string, peerPort int) component.Tra
 
 	logger.Info("Creating new exporter for", zap.String("PeerIP", ip), zap.Int("PeerPort", peerPort))
 	params := component.ExporterCreateParams{Logger: logger}
-	exporter, err := factory.CreateTraceExporter(context.Background(), params, otlpConfig)
+	exporter, err := factory.CreateTracesExporter(context.Background(), params, otlpConfig)
 	if err != nil {
 		logger.Fatal("Could not create span exporter", zap.Error(err))
 		return nil
@@ -326,7 +326,8 @@ func (ap *aggregatingProcessor) ConsumeTraces(ctx context.Context, td pdata.Trac
 					continue
 				}
 
-				memberNum := jumpHash(fingerprint(span.TraceID().Bytes()), len(peersSorted))
+				traceIDBytes := span.TraceID().Bytes()
+				memberNum := jumpHash(fingerprint(traceIDBytes[:]), len(peersSorted))
 				if memberNum == -1 {
 					// Any spans having a hash error -> self processed
 					ap.logger.Debug("Adding span to self due to hash error", zap.String("TraceID", span.TraceID().HexString()))
