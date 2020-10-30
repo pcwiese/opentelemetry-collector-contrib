@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// +build !windows
-
 package datadogexporter
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
-	"github.com/DataDog/datadog-agent/pkg/trace/obfuscate"
-	"github.com/DataDog/datadog-agent/pkg/trace/pb"
+	"github.com/DataDog/datadog-agent/pkg/trace/exportable/obfuscate"
+	"github.com/DataDog/datadog-agent/pkg/trace/exportable/pb"
 	"github.com/stretchr/testify/assert"
 	"go.opentelemetry.io/collector/consumer/pdata"
 	tracetranslator "go.opentelemetry.io/collector/translator/trace"
@@ -30,7 +29,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/config"
 )
 
-func NewResourceSpansData(mockTraceID []byte, mockSpanID []byte, mockParentSpanID []byte, shouldErr bool, resourceEnvAndService bool) pdata.ResourceSpans {
+func NewResourceSpansData(mockTraceID [16]byte, mockSpanID [8]byte, mockParentSpanID [8]byte, shouldErr bool, resourceEnvAndService bool) pdata.ResourceSpans {
 	// The goal of this test is to ensure that each span in
 	// pdata.ResourceSpans is transformed to its *trace.SpanData correctly!
 
@@ -126,18 +125,18 @@ func TestConvertToDatadogTd(t *testing.T) {
 	traces := pdata.NewTraces()
 	traces.ResourceSpans().Resize(1)
 
-	outputTraces, err := ConvertToDatadogTd(traces, &config.Config{}, []string{})
+	outputTraces, err := ConvertToDatadogTd(traces, &config.Config{})
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, 1, len(outputTraces))
 }
 
 func TestConvertToDatadogTdNoResourceSpans(t *testing.T) {
 	traces := pdata.NewTraces()
 
-	outputTraces, err := ConvertToDatadogTd(traces, &config.Config{}, []string{})
+	outputTraces, err := ConvertToDatadogTd(traces, &config.Config{})
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, 0, len(outputTraces))
 }
 
@@ -172,25 +171,13 @@ func TestObfuscation(t *testing.T) {
 	ilss.Spans().Resize(1)
 	span.CopyTo(ilss.Spans().At(0))
 
-	outputTraces, err := ConvertToDatadogTd(traces, &config.Config{}, []string{})
+	outputTraces, err := ConvertToDatadogTd(traces, &config.Config{})
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	aggregatedTraces := AggregateTracePayloadsByEnv(outputTraces)
 
-	obfuscator := obfuscate.NewObfuscator(&obfuscate.Config{
-		ES: obfuscate.JSONSettings{
-			Enabled: true,
-		},
-		Mongo: obfuscate.JSONSettings{
-			Enabled: true,
-		},
-		RemoveQueryString: true,
-		RemovePathDigits:  true,
-		RemoveStackTraces: true,
-		Redis:             true,
-		Memcached:         true,
-	})
+	obfuscator := obfuscate.NewObfuscator(obfuscatorConfig)
 
 	ObfuscatePayload(obfuscator, aggregatedTraces)
 
@@ -201,17 +188,16 @@ func TestBasicTracesTranslation(t *testing.T) {
 	hostname := "testhostname"
 
 	// generate mock trace, span and parent span ids
-	mockTraceID := []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F}
-	mockSpanID := []byte{0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8}
-	mockParentSpanID := []byte{0xEF, 0xEE, 0xED, 0xEC, 0xEB, 0xEA, 0xE9, 0xE8}
+	mockTraceID := [16]byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F}
+	mockSpanID := [8]byte{0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8}
+	mockParentSpanID := [8]byte{0xEF, 0xEE, 0xED, 0xEC, 0xEB, 0xEA, 0xE9, 0xE8}
 
 	// create mock resource span data
 	// set shouldError and resourceServiceandEnv to false to test defaut behavior
 	rs := NewResourceSpansData(mockTraceID, mockSpanID, mockParentSpanID, false, false)
 
-	mockGlobalTags := []string{"global_key:global_value"}
 	// translate mocks to datadog traces
-	datadogPayload, err := resourceSpansToDatadogSpans(rs, hostname, &config.Config{}, mockGlobalTags)
+	datadogPayload, err := resourceSpansToDatadogSpans(rs, hostname, &config.Config{})
 
 	if err != nil {
 		t.Fatalf("Failed to convert from pdata ResourceSpans to pb.TracePayload: %v", err)
@@ -225,7 +211,7 @@ func TestBasicTracesTranslation(t *testing.T) {
 	assert.Equal(t, 1, len(datadogPayload.Traces))
 
 	// ensure trace id gets translated to uint64 correctly
-	assert.Equal(t, decodeAPMId(mockTraceID), datadogPayload.Traces[0].TraceID)
+	assert.Equal(t, decodeAPMTraceID(mockTraceID), datadogPayload.Traces[0].TraceID)
 
 	// ensure the correct number of spans are expected
 	assert.Equal(t, 1, len(datadogPayload.Traces[0].Spans))
@@ -234,20 +220,20 @@ func TestBasicTracesTranslation(t *testing.T) {
 	assert.Equal(t, datadogPayload.Traces[0].TraceID, datadogPayload.Traces[0].Spans[0].TraceID)
 
 	// ensure span's spanId and parentSpanId are set correctly
-	assert.Equal(t, decodeAPMId(mockSpanID), datadogPayload.Traces[0].Spans[0].SpanID)
-	assert.Equal(t, decodeAPMId(mockParentSpanID), datadogPayload.Traces[0].Spans[0].ParentID)
+	assert.Equal(t, decodeAPMSpanID(mockSpanID), datadogPayload.Traces[0].Spans[0].SpanID)
+	assert.Equal(t, decodeAPMSpanID(mockParentSpanID), datadogPayload.Traces[0].Spans[0].ParentID)
 
 	// ensure that span.resource defaults to otlp span.name
 	assert.Equal(t, "End-To-End Here", datadogPayload.Traces[0].Spans[0].Resource)
 
 	// ensure that span.name defaults to string representing instrumentation library if present
-	assert.Equal(t, fmt.Sprintf("%s.%s", datadogPayload.Traces[0].Spans[0].Meta[tracetranslator.TagInstrumentationName], pdata.SpanKindSERVER), datadogPayload.Traces[0].Spans[0].Name)
+	assert.Equal(t, strings.ToLower(fmt.Sprintf("%s.%s", datadogPayload.Traces[0].Spans[0].Meta[tracetranslator.TagInstrumentationName], pdata.SpanKindSERVER)), datadogPayload.Traces[0].Spans[0].Name)
 
 	// ensure that span.type is based on otlp span.kind
-	assert.Equal(t, "server", datadogPayload.Traces[0].Spans[0].Type)
+	assert.Equal(t, "web", datadogPayload.Traces[0].Spans[0].Type)
 
 	// ensure that span.meta and span.metrics pick up attibutes, instrumentation ibrary and resource attribs
-	assert.Equal(t, 10, len(datadogPayload.Traces[0].Spans[0].Meta))
+	assert.Equal(t, 9, len(datadogPayload.Traces[0].Spans[0].Meta))
 	assert.Equal(t, 1, len(datadogPayload.Traces[0].Spans[0].Metrics))
 
 	// ensure that span error is based on otlp span status
@@ -268,16 +254,16 @@ func TestTracesTranslationErrorsAndResource(t *testing.T) {
 	hostname := "testhostname"
 
 	// generate mock trace, span and parent span ids
-	mockTraceID := []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F}
-	mockSpanID := []byte{0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8}
-	mockParentSpanID := []byte{0xEF, 0xEE, 0xED, 0xEC, 0xEB, 0xEA, 0xE9, 0xE8}
+	mockTraceID := [16]byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F}
+	mockSpanID := [8]byte{0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8}
+	mockParentSpanID := [8]byte{0xEF, 0xEE, 0xED, 0xEC, 0xEB, 0xEA, 0xE9, 0xE8}
 
 	// create mock resource span data
 	// toggle on errors and custom service naming to test edge case code paths
 	rs := NewResourceSpansData(mockTraceID, mockSpanID, mockParentSpanID, true, true)
 
 	// translate mocks to datadog traces
-	datadogPayload, err := resourceSpansToDatadogSpans(rs, hostname, &config.Config{}, []string{})
+	datadogPayload, err := resourceSpansToDatadogSpans(rs, hostname, &config.Config{})
 
 	if err != nil {
 		t.Fatalf("Failed to convert from pdata ResourceSpans to pb.TracePayload: %v", err)
@@ -306,9 +292,9 @@ func TestTracesTranslationConfig(t *testing.T) {
 	hostname := "testhostname"
 
 	// generate mock trace, span and parent span ids
-	mockTraceID := []byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F}
-	mockSpanID := []byte{0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8}
-	mockParentSpanID := []byte{0xEF, 0xEE, 0xED, 0xEC, 0xEB, 0xEA, 0xE9, 0xE8}
+	mockTraceID := [16]byte{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F}
+	mockSpanID := [8]byte{0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8}
+	mockParentSpanID := [8]byte{0xEF, 0xEE, 0xED, 0xEC, 0xEB, 0xEA, 0xE9, 0xE8}
 
 	// create mock resource span data
 	// toggle on errors and custom service naming to test edge case code paths
@@ -322,7 +308,7 @@ func TestTracesTranslationConfig(t *testing.T) {
 	}
 
 	// translate mocks to datadog traces
-	datadogPayload, err := resourceSpansToDatadogSpans(rs, hostname, &cfg, []string{"other_tag:example", "invalidthings"})
+	datadogPayload, err := resourceSpansToDatadogSpans(rs, hostname, &cfg)
 
 	if err != nil {
 		t.Fatalf("Failed to convert from pdata ResourceSpans to pb.TracePayload: %v", err)
@@ -343,9 +329,8 @@ func TestTracesTranslationConfig(t *testing.T) {
 
 	// ensure that env gives resource deployment.environment priority
 	assert.Equal(t, "test-env", datadogPayload.Env)
-	assert.Equal(t, 14, len(datadogPayload.Traces[0].Spans[0].Meta))
+	assert.Equal(t, 13, len(datadogPayload.Traces[0].Spans[0].Meta))
 	assert.Equal(t, "v1", datadogPayload.Traces[0].Spans[0].Meta["version"])
-	assert.Equal(t, "example", datadogPayload.Traces[0].Spans[0].Meta["other_tag"])
 }
 
 // ensure that the translation returns early if no resource instrumentation library spans
@@ -363,7 +348,7 @@ func TestTracesTranslationNoIls(t *testing.T) {
 	}
 
 	// translate mocks to datadog traces
-	datadogPayload, err := resourceSpansToDatadogSpans(rs, hostname, &cfg, []string{"other_tag:example", "invalidthings"})
+	datadogPayload, err := resourceSpansToDatadogSpans(rs, hostname, &cfg)
 
 	if err != nil {
 		t.Fatalf("Failed to convert from pdata ResourceSpans to pb.TracePayload: %v", err)
@@ -424,15 +409,21 @@ func TestSpanNameTranslation(t *testing.T) {
 		"otel.library.name": "current_value",
 	}
 
+	ddIlTagsUnusual := map[string]string{
+		"otel.library.name": "@unusual/\\::value",
+	}
+
 	spanNameIl := getDatadogSpanName(span, ddIlTags)
 	spanNameDefault := getDatadogSpanName(span, ddNoIlTags)
 	spanNameOld := getDatadogSpanName(span, ddIlTagsOld)
 	spanNameCur := getDatadogSpanName(span, ddIlTagsCur)
+	spanNameUnusual := getDatadogSpanName(span, ddIlTagsUnusual)
 
-	assert.Equal(t, fmt.Sprintf("%s.%s", "il_name", pdata.SpanKindSERVER), spanNameIl)
-	assert.Equal(t, fmt.Sprintf("%s.%s", "opentelemetry", pdata.SpanKindSERVER), spanNameDefault)
-	assert.Equal(t, fmt.Sprintf("%s.%s", "old_value", pdata.SpanKindSERVER), spanNameOld)
-	assert.Equal(t, fmt.Sprintf("%s.%s", "current_value", pdata.SpanKindSERVER), spanNameCur)
+	assert.Equal(t, strings.ToLower(fmt.Sprintf("%s.%s", "il_name", pdata.SpanKindSERVER)), spanNameIl)
+	assert.Equal(t, strings.ToLower(fmt.Sprintf("%s.%s", "opentelemetry", pdata.SpanKindSERVER)), spanNameDefault)
+	assert.Equal(t, strings.ToLower(fmt.Sprintf("%s.%s", "old_value", pdata.SpanKindSERVER)), spanNameOld)
+	assert.Equal(t, strings.ToLower(fmt.Sprintf("%s.%s", "current_value", pdata.SpanKindSERVER)), spanNameCur)
+	assert.Equal(t, strings.ToLower(fmt.Sprintf("%s.%s", "unusual_value", pdata.SpanKindSERVER)), spanNameUnusual)
 }
 
 // ensure that the datadog span type gets mapped from span kind
@@ -441,8 +432,8 @@ func TestSpanTypeTranslation(t *testing.T) {
 	spanTypeServer := spanKindToDatadogType(pdata.SpanKindSERVER)
 	spanTypeCustom := spanKindToDatadogType(pdata.SpanKindUNSPECIFIED)
 
-	assert.Equal(t, "client", spanTypeClient)
-	assert.Equal(t, "server", spanTypeServer)
+	assert.Equal(t, "http", spanTypeClient)
+	assert.Equal(t, "web", spanTypeServer)
 	assert.Equal(t, "custom", spanTypeCustom)
 
 }
@@ -473,14 +464,6 @@ func TestHttpResourceTag(t *testing.T) {
 	resourceName := getDatadogResourceName(pdata.Span{}, ddTags)
 
 	assert.Equal(t, "POST", resourceName)
-}
-
-func TestCanonicalSpanTag(t *testing.T) {
-	baseCase := isCanonicalSpanTag("notenv")
-	isCanonicalCase := isCanonicalSpanTag("env")
-
-	assert.Equal(t, false, baseCase)
-	assert.Equal(t, true, isCanonicalCase)
 }
 
 // ensure that payloads get aggregated by env to reduce number of flushes

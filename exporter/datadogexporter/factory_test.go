@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package datadogexporter
 
 import (
@@ -43,18 +44,11 @@ func TestCreateDefaultConfig(t *testing.T) {
 			NameVal: typeStr,
 		},
 
-		// These are filled when loading using the helper methods
-		TagsConfig: config.TagsConfig{
-			Hostname: "${DD_HOST}",
-			Env:      "${DD_ENV}",
-			Service:  "${DD_SERVICE}",
-			Version:  "${DD_VERSION}",
-		},
-
 		API: config.APIConfig{Site: "datadoghq.com"},
 		Traces: config.TracesConfig{
 			SampleRate: 1,
 		},
+		SendMetadata: true,
 	}, cfg, "failed to create default config")
 
 	assert.NoError(t, configcheck.ValidateConfig(cfg))
@@ -108,6 +102,7 @@ func TestLoadConfig(t *testing.T) {
 				Endpoint: "https://trace.agent.datadoghq.eu",
 			},
 		},
+		SendMetadata: true,
 	}, apiConfig)
 
 	invalidConfig2 := cfg.Exporters["datadog/invalid"].(*config.Config)
@@ -123,7 +118,7 @@ func TestCreateAPIMetricsExporter(t *testing.T) {
 	logger := zap.NewNop()
 
 	factories, err := componenttest.ExampleComponents()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	factory := NewFactory()
 	factories.Exporters[configmodels.Type(typeStr)] = factory
@@ -135,6 +130,7 @@ func TestCreateAPIMetricsExporter(t *testing.T) {
 	// Use the mock server for API key validation
 	c := (cfg.Exporters["datadog/api"]).(*config.Config)
 	c.Metrics.TCPAddr.Endpoint = server.URL
+	c.SendMetadata = false
 	cfg.Exporters["datadog/api"] = c
 
 	ctx := context.Background()
@@ -144,6 +140,38 @@ func TestCreateAPIMetricsExporter(t *testing.T) {
 		cfg.Exporters["datadog/api"],
 	)
 
-	assert.Nil(t, err)
+	assert.NoError(t, err)
+	assert.NotNil(t, exp)
+}
+
+func TestCreateAPITracesExporter(t *testing.T) {
+	server := testutils.DatadogServerMock()
+	defer server.Close()
+
+	logger := zap.NewNop()
+
+	factories, err := componenttest.ExampleComponents()
+	require.NoError(t, err)
+
+	factory := NewFactory()
+	factories.Exporters[configmodels.Type(typeStr)] = factory
+	cfg, err := configtest.LoadConfigFile(t, path.Join(".", "testdata", "config.yaml"), factories)
+
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	// Use the mock server for API key validation
+	c := (cfg.Exporters["datadog/api"]).(*config.Config)
+	c.Metrics.TCPAddr.Endpoint = server.URL
+	c.SendMetadata = false
+
+	ctx := context.Background()
+	exp, err := factory.CreateTracesExporter(
+		ctx,
+		component.ExporterCreateParams{Logger: logger},
+		cfg.Exporters["datadog/api"],
+	)
+
+	assert.NoError(t, err)
 	assert.NotNil(t, exp)
 }

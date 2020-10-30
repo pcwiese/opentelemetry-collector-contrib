@@ -24,13 +24,16 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/awsxrayexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/azuremonitorexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/carbonexporter"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/elasticexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/honeycombexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/jaegerthrifthttpexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/kinesisexporter"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/logzioexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/newrelicexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/sapmexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/sentryexporter"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/signalfxcorrelationexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/signalfxexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/splunkhecexporter"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/stackdriverexporter"
@@ -43,6 +46,7 @@ import (
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/metricstransformprocessor"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/routingprocessor"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/tailsamplingprocessor"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awsecscontainermetricsreceiver"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/awsxrayreceiver"
 	"github.com/open-telemetry/opentelemetry-collector-contrib/receiver/carbonreceiver"
@@ -101,6 +105,9 @@ func components() (component.Factories, error) {
 		statsdreceiver.NewFactory(),
 		wavefrontreceiver.NewFactory(),
 	}
+
+	receivers = append(receivers, extraReceivers()...)
+
 	for _, rcv := range factories.Receivers {
 		receivers = append(receivers, rcv)
 	}
@@ -115,13 +122,16 @@ func components() (component.Factories, error) {
 		awsxrayexporter.NewFactory(),
 		azuremonitorexporter.NewFactory(),
 		carbonexporter.NewFactory(),
+		datadogexporter.NewFactory(),
 		elasticexporter.NewFactory(),
 		honeycombexporter.NewFactory(),
 		jaegerthrifthttpexporter.NewFactory(),
 		kinesisexporter.NewFactory(),
+		logzioexporter.NewFactory(),
 		newrelicexporter.NewFactory(),
 		sapmexporter.NewFactory(),
 		sentryexporter.NewFactory(),
+		signalfxcorrelationexporter.NewFactory(),
 		signalfxexporter.NewFactory(),
 		splunkhecexporter.NewFactory(),
 		stackdriverexporter.NewFactory(),
@@ -141,6 +151,7 @@ func components() (component.Factories, error) {
 		metricstransformprocessor.NewFactory(),
 		resourcedetectionprocessor.NewFactory(),
 		routingprocessor.NewFactory(),
+		tailsamplingprocessor.NewFactory(),
 	}
 	for _, pr := range factories.Processors {
 		processors = append(processors, pr)

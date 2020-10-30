@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 package datadogexporter
 
 import (
@@ -22,6 +23,7 @@ import (
 	"go.opentelemetry.io/collector/exporter/exporterhelper"
 
 	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/config"
+	"github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter/metadata"
 )
 
 const (
@@ -35,6 +37,7 @@ func NewFactory() component.ExporterFactory {
 		typeStr,
 		createDefaultConfig,
 		exporterhelper.WithMetrics(createMetricsExporter),
+		exporterhelper.WithTraces(createTraceExporter),
 	)
 }
 
@@ -44,13 +47,6 @@ func createDefaultConfig() configmodels.Exporter {
 		ExporterSettings: configmodels.ExporterSettings{
 			TypeVal: configmodels.Type(typeStr),
 			NameVal: typeStr,
-		},
-
-		TagsConfig: config.TagsConfig{
-			Hostname: "${DD_HOST}",
-			Env:      "${DD_ENV}",
-			Service:  "${DD_SERVICE}",
-			Version:  "${DD_VERSION}",
 		},
 
 		API: config.APIConfig{
@@ -70,12 +66,14 @@ func createDefaultConfig() configmodels.Exporter {
 				Endpoint: "", // set during config sanitization
 			},
 		},
+
+		SendMetadata: true,
 	}
 }
 
 // createMetricsExporter creates a metrics exporter based on this config.
 func createMetricsExporter(
-	_ context.Context,
+	ctx context.Context,
 	params component.ExporterCreateParams,
 	c configmodels.Exporter,
 ) (component.MetricsExporter, error) {
@@ -87,15 +85,66 @@ func createMetricsExporter(
 		return nil, err
 	}
 
-	exp, err := newMetricsExporter(params.Logger, cfg)
+	exp, err := newMetricsExporter(params, cfg)
 	if err != nil {
 		return nil, err
 	}
 
+	ctx, cancel := context.WithCancel(ctx)
+	if cfg.SendMetadata {
+		once := cfg.OnceMetadata()
+		once.Do(func() {
+			go metadata.Pusher(ctx, params, cfg)
+		})
+	}
+
 	return exporterhelper.NewMetricsExporter(
 		cfg,
+		params.Logger,
 		exp.PushMetricsData,
 		exporterhelper.WithQueue(exporterhelper.CreateDefaultQueueSettings()),
 		exporterhelper.WithRetry(exporterhelper.CreateDefaultRetrySettings()),
+		exporterhelper.WithShutdown(func(context.Context) error {
+			cancel()
+			return nil
+		}),
+	)
+}
+
+// createTraceExporter creates a trace exporter based on this config.
+func createTraceExporter(
+	ctx context.Context,
+	params component.ExporterCreateParams,
+	c configmodels.Exporter,
+) (component.TracesExporter, error) {
+
+	cfg := c.(*config.Config)
+
+	params.Logger.Info("sanitizing Datadog metrics exporter configuration")
+	if err := cfg.Sanitize(); err != nil {
+		return nil, err
+	}
+
+	exp, err := newTraceExporter(params, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, cancel := context.WithCancel(ctx)
+	if cfg.SendMetadata {
+		once := cfg.OnceMetadata()
+		once.Do(func() {
+			go metadata.Pusher(ctx, params, cfg)
+		})
+	}
+
+	return exporterhelper.NewTraceExporter(
+		cfg,
+		params.Logger,
+		exp.pushTraceData,
+		exporterhelper.WithShutdown(func(context.Context) error {
+			cancel()
+			return nil
+		}),
 	)
 }
