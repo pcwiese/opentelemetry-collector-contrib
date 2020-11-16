@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/StackExchange/wmi v0.0.0-20190523213315-cbe66965904d // indirect
-	github.com/aws/aws-sdk-go v1.34.9
+	github.com/aws/aws-sdk-go v1.35.28
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gogo/googleapis v1.3.1 // indirect
 	github.com/signalfx/omnition-kinesis-producer v0.5.0
