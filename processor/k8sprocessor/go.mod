@@ -8,9 +8,9 @@ require (
 	go.opencensus.io v0.22.5
 	go.opentelemetry.io/collector v0.13.1-0.20201029205115-f137ead593ba
 	go.uber.org/zap v1.16.0
-	k8s.io/api v0.19.3
-	k8s.io/apimachinery v0.19.3
-	k8s.io/client-go v0.19.3
+	k8s.io/api v0.19.4
+	k8s.io/apimachinery v0.19.4
+	k8s.io/client-go v0.19.4
 )
 
 replace github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig => ./../../internal/k8sconfig
