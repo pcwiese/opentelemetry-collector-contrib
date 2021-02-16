@@ -48,11 +48,31 @@ const (
 	// to sample the data.
 	Sampled
 	// NotSampled is used to indicate that the decision was already taken
-	// to not sample the data.
+	// to not sample the data. This a final decision. No additional policies should be evaluated.
 	NotSampled
 	// Dropped is used when data needs to be purged before the sampling policy
 	// had a chance to evaluate it.
 	Dropped
+	// NotSampledFinal is used to indicate that the Trace should not be sampled.
+	// This a final decision. No additional policies should be evaluated.
+	NotSampledFinal
+	// Skipped is used to indicate that policy was skipped because a final decision was already made.
+	Skipped
+	// Error is used to indicate an error during policy evaluation
+	Error
+)
+
+var (
+	decisionToStringMap = map[Decision]string{
+		Unspecified:     "unspecified",
+		Pending:         "pending",
+		Sampled:         "sampled",
+		NotSampled:      "notsampled",
+		Dropped:         "dropped",
+		NotSampledFinal: "notsampledfinal",
+		Skipped:         "skipped",
+		Error:           "error",
+	}
 )
 
 // PolicyEvaluator implements a tail-based sampling policy evaluator,
@@ -66,4 +86,8 @@ type PolicyEvaluator interface {
 
 	// Evaluate looks at the trace data and returns a corresponding SamplingDecision.
 	Evaluate(traceID pdata.TraceID, trace *TraceData) (Decision, error)
+}
+
+func (decision Decision) String() string {
+	return decisionToStringMap[decision]
 }

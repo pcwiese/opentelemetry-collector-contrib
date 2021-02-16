@@ -162,7 +162,7 @@ func TestOnDroppedSpans_Composite(t *testing.T) {
 	const totalSPS = 100
 	trace := createTrace()
 	c := NewComposite(zap.NewNop(), totalSPS, []SubPolicyEvalParams{{n1, totalSPS / 2}, {n2, totalSPS / 2}}, timeProvider)
-	decision, e := c.OnDroppedSpans(traceID, trace)
+	decision, e := c.Evaluate(traceID, trace)
 	assert.Nil(t, e)
 	assert.Equal(t, decision, Sampled)
 }
