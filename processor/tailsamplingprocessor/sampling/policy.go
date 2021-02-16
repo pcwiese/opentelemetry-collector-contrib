@@ -45,10 +45,10 @@ const (
 	// Pending indicates that the policy was not evaluated yet.
 	Pending
 	// Sampled is used to indicate that the decision was already taken
-	// to sample the data.
+	// to sample the data. This a final decision. No additional policies should be evaluated.
 	Sampled
 	// NotSampled is used to indicate that the decision was already taken
-	// to not sample the data. This a final decision. No additional policies should be evaluated.
+	// to not sample the data.
 	NotSampled
 	// Dropped is used when data needs to be purged before the sampling policy
 	// had a chance to evaluate it.

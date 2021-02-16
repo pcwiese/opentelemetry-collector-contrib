@@ -107,18 +107,21 @@ func NewLogicalOrAttributeEvaluator(logger *zap.Logger, evaluatorsConfig []Singl
 		if evaluatorCfg.StringAttributeCfg.Key != "" {
 			stringEvaluatorCfg := evaluatorCfg.StringAttributeCfg
 
-			decisionOnMatch := Sampled
-			switch stringEvaluatorCfg.DecisionOnMatch {
-			case "":
-			case "sampled":
-			case "notsampledfinal":
-				decisionOnMatch = NotSampledFinal
-			default:
-				return nil, fmt.Errorf("Unknown decision on match value %s. Valid values are sampled, notsampledfinal", stringEvaluatorCfg.DecisionOnMatch)
-			}
-			if stringEvaluatorCfg.DecisionOnMatch == "" {
+			const sampled = "sampled"
+			const notsampledfinal = "notsampledfinal"
+			decisionOnMatchString := stringEvaluatorCfg.DecisionOnMatch
 
+			// Validate the decision on match field value
+			if !(decisionOnMatchString == "" || decisionOnMatchString == sampled || decisionOnMatchString == notsampledfinal) {
+				return nil, fmt.Errorf("Unknown decision_on_match value %s. Valid values are unspecified or '%s' or '%s'", decisionOnMatchString, sampled, notsampledfinal)
 			}
+
+			// If not specified, defaults to sampled
+			decisionOnMatch := Sampled
+			if decisionOnMatchString == notsampledfinal {
+				decisionOnMatch = NotSampledFinal
+			}
+
 			evaluator = newStringAttributeEvaluator(logger, stringEvaluatorCfg.Key, stringEvaluatorCfg.Values, decisionOnMatch)
 		} else {
 			numericEvaluatorCfg := evaluatorCfg.NumericAttributeCfg
