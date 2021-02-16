@@ -25,7 +25,7 @@ import (
 // Variables related to metrics specific to tail sampling.
 var (
 	tagPolicyKey, _    = tag.NewKey("policy")
-	tagSampledKey, _   = tag.NewKey("sampled")
+	tagDecisionKey, _  = tag.NewKey("decision")
 	tagSourceFormat, _ = tag.NewKey("source_format")
 
 	statDecisionLatencyMicroSec  = stats.Int64("sampling_decision_latency", "Latency (in microseconds) of a given sampling policy", "µs")
@@ -36,7 +36,9 @@ var (
 
 	statPolicyEvaluationErrorCount = stats.Int64("sampling_policy_evaluation_error", "Count of sampling policy evaluation errors", stats.UnitDimensionless)
 
-	statCountTracesSampled = stats.Int64("count_traces_sampled", "Count of traces that were sampled or not", stats.UnitDimensionless)
+	statCountTracesEvaluated = stats.Int64("count_traces_evaluated", "Count of traces that were evaluated", stats.UnitDimensionless)
+
+	statCountPoliciesEvaluated = stats.Int64("count_policies_evaluated", "Count of policies that were evaluated", stats.UnitDimensionless)
 
 	statDroppedTooEarlyCount    = stats.Int64("sampling_trace_dropped_too_early", "Count of traces that needed to be dropped the configured wait time", stats.UnitDimensionless)
 	statNewTraceIDReceivedCount = stats.Int64("new_trace_id_received", "Counts the arrival of new traces", stats.UnitDimensionless)
@@ -88,12 +90,20 @@ func SamplingProcessorMetricViews(level configtelemetry.Level) []*view.View {
 		Aggregation: view.Sum(),
 	}
 
-	sampledTagKeys := []tag.Key{tagPolicyKey, tagSampledKey}
-	countTracesSampledView := &view.View{
-		Name:        statCountTracesSampled.Name(),
-		Measure:     statCountTracesSampled,
-		Description: statCountTracesSampled.Description(),
+	sampledTagKeys := []tag.Key{tagDecisionKey}
+	countTracesEvaluatedView := &view.View{
+		Name:        statCountTracesEvaluated.Name(),
+		Measure:     statCountTracesEvaluated,
+		Description: statCountTracesEvaluated.Description(),
 		TagKeys:     sampledTagKeys,
+		Aggregation: view.Sum(),
+	}
+
+	countPoliciesEvaluatedView := &view.View{
+		Name:        statCountPoliciesEvaluated.Name(),
+		Measure:     statCountPoliciesEvaluated,
+		Description: statCountPoliciesEvaluated.Description(),
+		TagKeys:     []tag.Key{tagPolicyKey, tagDecisionKey},
 		Aggregation: view.Sum(),
 	}
 
@@ -125,7 +135,8 @@ func SamplingProcessorMetricViews(level configtelemetry.Level) []*view.View {
 
 		countPolicyEvaluationErrorView,
 
-		countTracesSampledView,
+		countTracesEvaluatedView,
+		countPoliciesEvaluatedView,
 
 		countTraceDroppedTooEarlyView,
 		countTraceIDArrivalView,
