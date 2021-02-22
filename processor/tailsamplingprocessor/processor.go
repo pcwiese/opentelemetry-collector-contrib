@@ -354,6 +354,10 @@ func (tsp *tailSamplingSpanProcessor) processTraces(resourceSpans pdata.Resource
 				policy.Evaluator.OnLateArrivingSpans(actualDecision, spans)
 				stats.Record(tsp.ctx, statLateSpanArrivalAfterDecision.M(int64(time.Since(actualData.DecisionTime)/time.Second)))
 
+			// Ignore these
+			case sampling.NotSampledFinal:
+			case sampling.Skipped:
+
 			default:
 				tsp.logger.Warn("Encountered unexpected sampling decision",
 					zap.String("policy", policy.Name),
