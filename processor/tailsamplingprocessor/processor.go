@@ -117,6 +117,8 @@ func getPolicyEvaluator(logger *zap.Logger, cfg *PolicyCfg) (sampling.PolicyEval
 	switch cfg.Type {
 	case AlwaysSample:
 		return sampling.NewAlwaysSample(logger), nil
+	case LogicalOrAttributeEvaluator:
+		return sampling.NewLogicalOrAttributeEvaluator(logger, cfg.LogicalOrAttributeEvaluatorCfg)
 	case NumericAttribute:
 		nafCfg := cfg.NumericAttributeCfg
 		return sampling.NewNumericAttributeFilter(logger, nafCfg.Key, nafCfg.MinValue, nafCfg.MaxValue), nil
@@ -152,6 +154,19 @@ func (tsp *tailSamplingSpanProcessor) samplingPolicyOnTick() {
 		trace.DecisionTime = time.Now()
 
 		decision, policy := tsp.makeDecision(id, trace, &metrics)
+
+		// Record stats for the trace as a whole. It is either sampled or not.
+		if decision == sampling.Sampled {
+			metrics.decisionSampled++
+		} else {
+			metrics.decisionNotSampled++
+		}
+
+		_ = stats.RecordWithTags(
+			tsp.ctx,
+			[]tag.Mutator{tag.Insert(tagDecisionKey, decision.String())},
+			statCountTracesEvaluated.M(int64(1)),
+		)
 
 		// Sampled or not, remove the batches
 		trace.Lock()
@@ -190,47 +205,51 @@ func (tsp *tailSamplingSpanProcessor) samplingPolicyOnTick() {
 
 func (tsp *tailSamplingSpanProcessor) makeDecision(id pdata.TraceID, trace *sampling.TraceData, metrics *policyMetrics) (sampling.Decision, *Policy) {
 	finalDecision := sampling.NotSampled
-	var matchingPolicy *Policy
+	var matchingPolicy *Policy = nil
+	skipRemaining := false
 
+	// Decisions for all policies are recorded however, once a
+	// final sampling decision is made, any remaining policies are skipped.
 	for i, policy := range tsp.policies {
-		policyEvaluateStartTime := time.Now()
-		decision, err := policy.Evaluator.Evaluate(id, trace)
-		stats.Record(
-			policy.ctx,
-			statDecisionLatencyMicroSec.M(int64(time.Since(policyEvaluateStartTime)/time.Microsecond)))
-
-		if err != nil {
-			trace.Decisions[i] = sampling.NotSampled
-			metrics.evaluateErrorCount++
-			tsp.logger.Debug("Sampling policy error", zap.Error(err))
+		// If a final decision has already been made, record the remaining policies as Skipped.
+		if skipRemaining {
+			trace.Decisions[i] = sampling.Skipped
 		} else {
-			trace.Decisions[i] = decision
 
-			switch decision {
-			case sampling.Sampled:
-				// any single policy that decides to sample will cause the decision to be sampled
-				// the nextConsumer will get the context from the first matching policy
-				finalDecision = sampling.Sampled
-				if matchingPolicy == nil {
+			// Evaluate the policy
+			policyEvaluateStartTime := time.Now()
+			policyEvaluationDecision, err := policy.Evaluator.Evaluate(id, trace)
+			stats.Record(
+				policy.ctx,
+				statDecisionLatencyMicroSec.M(int64(time.Since(policyEvaluateStartTime)/time.Microsecond)))
+
+			if err != nil {
+				trace.Decisions[i] = sampling.Error
+				metrics.evaluateErrorCount++
+				tsp.logger.Debug("Sampling policy error", zap.Error(err))
+			} else {
+				trace.Decisions[i] = policyEvaluationDecision
+
+				// A final decision is Sampled or NotSampledFinal.
+				if policyEvaluationDecision == sampling.Sampled || policyEvaluationDecision == sampling.NotSampledFinal {
+					finalDecision = policyEvaluationDecision
+
+					// The final decision should always be Sampled or NotSampled.
+					if policyEvaluationDecision == sampling.NotSampledFinal {
+						finalDecision = sampling.NotSampled
+					}
+
 					matchingPolicy = policy
+					skipRemaining = true
 				}
-
-				_ = stats.RecordWithTags(
-					policy.ctx,
-					[]tag.Mutator{tag.Insert(tagSampledKey, "true")},
-					statCountTracesSampled.M(int64(1)),
-				)
-				metrics.decisionSampled++
-
-			case sampling.NotSampled:
-				_ = stats.RecordWithTags(
-					policy.ctx,
-					[]tag.Mutator{tag.Insert(tagSampledKey, "false")},
-					statCountTracesSampled.M(int64(1)),
-				)
-				metrics.decisionNotSampled++
 			}
 		}
+
+		// Record per policy evaluation stats
+		_ = stats.RecordWithTags(
+			policy.ctx,
+			[]tag.Mutator{tag.Insert(tagDecisionKey, trace.Decisions[i].String())},
+			statCountPoliciesEvaluated.M(int64(1)))
 	}
 
 	return finalDecision, matchingPolicy
@@ -331,6 +350,10 @@ func (tsp *tailSamplingSpanProcessor) processTraces(resourceSpans pdata.Resource
 			case sampling.NotSampled:
 				policy.Evaluator.OnLateArrivingSpans(actualDecision, spans)
 				stats.Record(tsp.ctx, statLateSpanArrivalAfterDecision.M(int64(time.Since(actualData.DecisionTime)/time.Second)))
+
+			// Ignore these
+			case sampling.NotSampledFinal:
+			case sampling.Skipped:
 
 			default:
 				tsp.logger.Warn("Encountered unexpected sampling decision",

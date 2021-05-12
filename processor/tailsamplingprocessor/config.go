@@ -18,6 +18,8 @@ import (
 	"time"
 
 	"go.opentelemetry.io/collector/config"
+
+	"github.com/open-telemetry/opentelemetry-collector-contrib/processor/tailsamplingprocessor/sampling"
 )
 
 // PolicyType indicates the type of sampling policy.
@@ -26,6 +28,8 @@ type PolicyType string
 const (
 	// AlwaysSample samples all traces, typically used for debugging.
 	AlwaysSample PolicyType = "always_sample"
+	// LogicalOrAttributeEvaluator samples traces when at least one evaluator matches
+	LogicalOrAttributeEvaluator PolicyType = "logical_or_attribute_evaluator"
 	// NumericAttribute sample traces that have a given numeric attribute in a specified
 	// range, e.g.: attribute "http.status_code" >= 399 and <= 999.
 	NumericAttribute PolicyType = "numeric_attribute"
@@ -42,6 +46,8 @@ type PolicyCfg struct {
 	Name string `mapstructure:"name"`
 	// Type of the policy this will be used to match the proper configuration of the policy.
 	Type PolicyType `mapstructure:"type"`
+	// Configs for the logical OR attribute evaluator
+	LogicalOrAttributeEvaluatorCfg []sampling.SingleAttributeEvaluatorCfg `mapstructure:"logical_or_attribute_evaluators"`
 	// Configs for numeric attribute filter sampling policy evaluator.
 	NumericAttributeCfg NumericAttributeCfg `mapstructure:"numeric_attribute"`
 	// Configs for string attribute filter sampling policy evaluator.

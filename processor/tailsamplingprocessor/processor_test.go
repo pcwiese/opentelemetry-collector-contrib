@@ -248,14 +248,15 @@ func TestSamplingMultiplePolicies(t *testing.T) {
 		)
 	}
 
+	// Once a final decision is made the rest of the policy evaluations are skipped.
 	// Both policies will decide to sample
 	mpe1.NextDecision = sampling.Sampled
-	mpe2.NextDecision = sampling.Sampled
+	mpe2.NextDecision = sampling.Unspecified
 	tsp.samplingPolicyOnTick()
-	require.False(
+	require.True(
 		t,
-		msp.SpansCount() == 0 || mpe1.EvaluationCount == 0 || mpe2.EvaluationCount == 0,
-		"policy should have been evaluated totalspans == %d and evaluationcount(1) == %d and evaluationcount(2) == %d",
+		msp.SpansCount() > 0 && mpe1.EvaluationCount > 0 && mpe2.EvaluationCount == 0,
+		"Policy evaluation error totalspans == %d and evaluationcount(1) == %d and evaluationcount(2) == %d",
 		msp.SpansCount(),
 		mpe1.EvaluationCount,
 		mpe2.EvaluationCount,
