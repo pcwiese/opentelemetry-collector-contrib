@@ -51,8 +51,8 @@ code.cloudfoundry.org/clock v1.0.0/go.mod h1:QD9Lzhd/ux6eNQVUDVRJX/RKTigpewimNYB
 collectd.org v0.3.0/go.mod h1:A/8DzQBkF6abtvrT2j/AU/4tiBgJWYyh0y/oB/4MlWE=
 contrib.go.opencensus.io/exporter/prometheus v0.3.0 h1:08FMdJYpItzsknogU6PiiNo7XQZg/25GjH236+YCwD0=
 contrib.go.opencensus.io/exporter/prometheus v0.3.0/go.mod h1:rpCPVQKhiyH8oomWgm34ZmgIdZa8OVYO5WAIygPbBBE=
-contrib.go.opencensus.io/exporter/stackdriver v0.13.6 h1:5jjiD3beqIHucvDgsA/noHK/4oT7XLLi3Q7lwmJgA88=
-contrib.go.opencensus.io/exporter/stackdriver v0.13.6/go.mod h1:huNtlWx75MwO7qMs0KrMxPZXzNNWebav1Sq/pm02JdQ=
+contrib.go.opencensus.io/exporter/stackdriver v0.13.7 h1:hAIKGfweGma95MG+PZZTN2rD2Vc1DKmUmPeRYlG6j7c=
+contrib.go.opencensus.io/exporter/stackdriver v0.13.7/go.mod h1:huNtlWx75MwO7qMs0KrMxPZXzNNWebav1Sq/pm02JdQ=
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 gioui.org v0.0.0-20210308172011-57750fc8a0a6/go.mod h1:RSH6KIUZ0p2xy5zHDxgAM4zumjgTw83q2ge/PI+yyw8=
 github.com/AndreasBriese/bbloom v0.0.0-20190306092124-e2d15f34fcf9/go.mod h1:bOvUY6CB00SOBii9/FifXqc0awNKxLFCL/+pkDPuyl8=
@@ -109,8 +109,8 @@ github.com/DataDog/zstd v1.4.4/go.mod h1:1jcaCB/ufaK+sKp1NBhlGmpz41jOoPQ35bpF36t
 github.com/DataDog/zstd v1.4.5 h1:EndNeuB0l9syBZhut0wns3gV1hL8zX8LIu6ZiVHWLIQ=
 github.com/DataDog/zstd v1.4.5/go.mod h1:1jcaCB/ufaK+sKp1NBhlGmpz41jOoPQ35bpF36t7BBo=
 github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24/go.mod h1:4UJr5HIiMZrwgkSPdsjy2uOQExX/WEILpIrO9UPGuXs=
-github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v0.20.0 h1:ExGRyJwOUijAPv/RzCJ3p1CNUxBQGzVO238m1lFjLS4=
-github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v0.20.0/go.mod h1:f4BFp2+kV6s/OKj3IP/34keB/OE7tTTaZZQyX/mQ7Ng=
+github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v0.20.1 h1:b+IF0z5KKs9pEXtPb3gic80fTotTOdiTzg+EfsKv7l4=
+github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v0.20.1/go.mod h1:f4BFp2+kV6s/OKj3IP/34keB/OE7tTTaZZQyX/mQ7Ng=
 github.com/HdrHistogram/hdrhistogram-go v0.9.0/go.mod h1:nxrse8/Tzg2tg3DZcZjm6qEclQKK70g0KxO61gFFZD4=
 github.com/HdrHistogram/hdrhistogram-go v1.0.1 h1:GX8GAYDuhlFQnI2fRDHQhTlkHMz8bEn0jTI6LJU0mpw=
 github.com/HdrHistogram/hdrhistogram-go v1.0.1/go.mod h1:BWJ+nMSHY3L41Zj7CA3uXnloDp7xxV0YvstAE7nKTaM=
@@ -2261,7 +2261,7 @@ google.golang.org/genproto v0.0.0-20210312152112-fc591d9ea70f/go.mod h1:FWY/as6D
 google.golang.org/genproto v0.0.0-20210319143718-93e7006c17a6/go.mod h1:FWY/as6DDZQgahTzZj3fqbO1CbirC29ZNUFHwi0/+no=
 google.golang.org/genproto v0.0.0-20210402141018-6c239bbf2bb1/go.mod h1:9lPAdzaEmUacj36I+k7YKbEc5CXzPIeORRgDAUOu28A=
 google.golang.org/genproto v0.0.0-20210429181445-86c259c2b4ab/go.mod h1:P3QM42oQyzQSnHPnZ/vqoCdDmzH28fzWByN9asMeM8A=
-google.golang.org/genproto v0.0.0-20210506142907-4a47615972c2/go.mod h1:P3QM42oQyzQSnHPnZ/vqoCdDmzH28fzWByN9asMeM8A=
+google.golang.org/genproto v0.0.0-20210513213006-bf773b8c8384/go.mod h1:P3QM42oQyzQSnHPnZ/vqoCdDmzH28fzWByN9asMeM8A=
 google.golang.org/genproto v0.0.0-20210517163617-5e0236093d7a h1:VA0wtJaR+W1I11P2f535J7D/YxyvEFMTMvcmyeZ9FBE=
 google.golang.org/genproto v0.0.0-20210517163617-5e0236093d7a/go.mod h1:P3QM42oQyzQSnHPnZ/vqoCdDmzH28fzWByN9asMeM8A=
 google.golang.org/grpc v0.0.0-20160317175043-d3ddb4469d5a/go.mod h1:yo6s7OP7yaDglbqo1J04qKzAhqBH6lvTonzMVmEdcZw=
