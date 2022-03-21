@@ -11,7 +11,7 @@ require (
 	github.com/onsi/gomega v1.10.2 // indirect
 	github.com/pelletier/go-toml v1.8.0 // indirect
 	github.com/shirou/gopsutil v3.21.4+incompatible
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/testcontainers/testcontainers-go v0.10.0
 	go.opentelemetry.io/collector v0.27.1-0.20210524201935-86ea0a131fb2
 	go.uber.org/atomic v1.7.0
