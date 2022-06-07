@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/pierrec/lz4 v2.6.1+incompatible
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.7.2
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.390
 	go.opentelemetry.io/collector v0.49.1-0.20220428142054-b34df3a7e7e9
 	go.uber.org/zap v1.21.0
@@ -43,7 +43,7 @@ require (
 	google.golang.org/grpc v1.46.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 replace github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal => ../../internal/coreinternal
