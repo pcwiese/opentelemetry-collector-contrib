@@ -9,7 +9,7 @@ require (
 	github.com/jaegertracing/jaeger v1.33.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.49.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/jaeger v0.49.0
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.7.2
 	github.com/xdg-go/scram v1.1.1
 	go.opentelemetry.io/collector v0.49.1-0.20220428142054-b34df3a7e7e9
 	go.opentelemetry.io/collector/pdata v0.49.1-0.20220428142054-b34df3a7e7e9
@@ -60,7 +60,7 @@ require (
 	google.golang.org/grpc v1.46.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 replace github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal => ../../internal/coreinternal
