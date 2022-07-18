@@ -6,7 +6,7 @@ go 1.17
 require (
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver v0.49.0
-	github.com/prometheus/common v0.34.0
+	github.com/prometheus/common v0.37.0
 	github.com/prometheus/prometheus v1.8.2-0.20220324155304-4d8bbfd4164c
 	github.com/stretchr/testify v1.7.1
 	go.opentelemetry.io/collector v0.49.1-0.20220428142054-b34df3a7e7e9
