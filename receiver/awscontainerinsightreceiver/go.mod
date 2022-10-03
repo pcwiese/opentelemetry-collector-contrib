@@ -11,7 +11,7 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/metrics v0.59.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig v0.59.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/kubelet v0.59.0
-	github.com/shirou/gopsutil/v3 v3.22.8
+	github.com/shirou/gopsutil/v3 v3.22.9
 	github.com/stretchr/testify v1.8.0
 	go.opentelemetry.io/collector v0.59.1-0.20220908061648-35cf596fc177
 	go.opentelemetry.io/collector/pdata v0.59.1-0.20220908061648-35cf596fc177
@@ -55,7 +55,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/gnostic v0.5.7-v3refs // indirect
-	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
