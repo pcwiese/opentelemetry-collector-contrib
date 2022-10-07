@@ -440,7 +440,8 @@ func TestSamplingPolicyDecisionInvertNotSampled(t *testing.T) {
 	// For this test explicitly control the timer calls and batcher, and set a mock
 	// sampling policy evaluator.
 	msp := new(consumertest.TracesSink)
-	mpe := &mockPolicyEvaluator{}
+	mpe1 := &mockPolicyEvaluator{}
+	mpe2 := &mockPolicyEvaluator{}
 	mtt := &manualTTicker{}
 	tsp := &tailSamplingSpanProcessor{
 		ctx:             context.Background(),
@@ -448,7 +449,10 @@ func TestSamplingPolicyDecisionInvertNotSampled(t *testing.T) {
 		maxNumTraces:    maxSize,
 		logger:          zap.NewNop(),
 		decisionBatcher: newSyncIDBatcher(decisionWaitSeconds),
-		policies:        []*policy{{name: "mock-policy", evaluator: mpe, ctx: context.TODO()}},
+		policies: []*policy{
+			{name: "mock-policy-1", evaluator: mpe1, ctx: context.TODO()},
+			{name: "mock-policy-2", evaluator: mpe2, ctx: context.TODO()},
+		},
 		deleteChan:      make(chan pcommon.TraceID, maxSize),
 		policyTicker:    mtt,
 		tickerFrequency: 100 * time.Millisecond,
@@ -471,26 +475,32 @@ func TestSamplingPolicyDecisionInvertNotSampled(t *testing.T) {
 		tsp.samplingPolicyOnTick()
 		require.False(
 			t,
-			msp.SpanCount() != 0 || mpe.EvaluationCount != 0,
+			msp.SpanCount() != 0 || mpe1.EvaluationCount != 0 || mpe2.EvaluationCount != 0,
 			"policy for initial items was evaluated before decision wait period",
 		)
 	}
 
 	// Now the first batch that waited the decision period.
-	mpe.NextDecision = sampling.InvertNotSampled
+	// InvertNotSampled should take precedence
+	mpe1.NextDecision = sampling.Sampled
+	mpe2.NextDecision = sampling.InvertNotSampled
 	tsp.samplingPolicyOnTick()
 	require.EqualValues(t, 0, msp.SpanCount(), "exporter should have received zero spans")
-	require.EqualValues(t, 4, mpe.EvaluationCount, "policy should have been evaluated 4 times")
+	require.EqualValues(t, 4, mpe1.EvaluationCount, "policy should have been evaluated 4 times")
+	require.EqualValues(t, 4, mpe2.EvaluationCount, "policy should have been evaluated 4 times")
 
 	// Late span of a non-sampled trace should be ignored
 	require.NoError(t, tsp.ConsumeTraces(context.Background(), batches[0]))
 	require.Equal(t, 0, msp.SpanCount())
 
-	mpe.NextDecision = sampling.Unspecified
-	mpe.NextError = errors.New("mock policy error")
+	mpe1.NextDecision = sampling.Unspecified
+	mpe1.NextError = errors.New("mock policy error")
+	mpe2.NextDecision = sampling.Unspecified
+	mpe2.NextError = errors.New("mock policy error")
 	tsp.samplingPolicyOnTick()
 	require.EqualValues(t, 0, msp.SpanCount(), "exporter should have received zero spans")
-	require.EqualValues(t, 6, mpe.EvaluationCount, "policy should have been evaluated 6 times")
+	require.EqualValues(t, 6, mpe1.EvaluationCount, "policy should have been evaluated 6 times")
+	require.EqualValues(t, 6, mpe2.EvaluationCount, "policy should have been evaluated 6 times")
 
 	// Late span of a non-sampled trace should be ignored
 	require.NoError(t, tsp.ConsumeTraces(context.Background(), batches[0]))
