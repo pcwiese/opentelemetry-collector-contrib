@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/cenkalti/backoff/v4 v4.1.3
 	github.com/mongodb-forks/digest v1.0.4
-	go.mongodb.org/atlas v0.17.0
+	go.mongodb.org/atlas v0.18.0
 	go.opentelemetry.io/collector v0.61.1-0.20221006231412-05d1c5f5572d
 	go.uber.org/zap v1.23.0
 )
