@@ -29,7 +29,7 @@ require (
 	go.opentelemetry.io/collector/receiver/otlpreceiver v0.64.2-0.20221115155901-1550938c18fd
 	go.opentelemetry.io/collector/semconv v0.64.2-0.20221115155901-1550938c18fd
 	go.uber.org/multierr v1.8.0
-	go.uber.org/zap v1.23.0
+	go.uber.org/zap v1.24.0
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/zorkian/go-datadog-api.v2 v2.30.0
 	k8s.io/apimachinery v0.25.4
