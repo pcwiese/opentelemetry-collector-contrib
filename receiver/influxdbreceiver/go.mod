@@ -8,7 +8,7 @@ require (
 	github.com/influxdata/line-protocol/v2 v2.2.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.64.0
 	go.opentelemetry.io/collector v0.64.2-0.20221115155901-1550938c18fd
-	go.uber.org/zap v1.23.0
+	go.uber.org/zap v1.24.0
 )
 
 require (
