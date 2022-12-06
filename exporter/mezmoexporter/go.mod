@@ -7,7 +7,7 @@ require (
 	go.opentelemetry.io/collector v0.64.2-0.20221115155901-1550938c18fd
 	go.opentelemetry.io/collector/pdata v0.64.2-0.20221115155901-1550938c18fd
 	go.opentelemetry.io/collector/semconv v0.64.2-0.20221115155901-1550938c18fd
-	go.uber.org/zap v1.23.0
+	go.uber.org/zap v1.24.0
 )
 
 require (
