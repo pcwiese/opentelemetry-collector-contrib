@@ -10,7 +10,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.15.0
 	go.opentelemetry.io/collector v0.64.2-0.20221115155901-1550938c18fd
 	go.opentelemetry.io/collector/pdata v0.64.2-0.20221115155901-1550938c18fd
-	go.uber.org/multierr v1.8.0
+	go.uber.org/multierr v1.9.0
 	go.uber.org/zap v1.23.0
 )
 
