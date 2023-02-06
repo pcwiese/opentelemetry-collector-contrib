@@ -9,7 +9,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	go.opentelemetry.io/collector v0.64.2-0.20221115155901-1550938c18fd
 	go.opentelemetry.io/collector/pdata v0.64.2-0.20221115155901-1550938c18fd
-	gopkg.in/natefinch/lumberjack.v2 v2.0.0
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
 require (
