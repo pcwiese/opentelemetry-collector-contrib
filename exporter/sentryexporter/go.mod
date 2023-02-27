@@ -6,7 +6,7 @@ require (
 	github.com/getsentry/sentry-go v0.14.0
 	github.com/google/go-cmp v0.5.9
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.64.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	go.opentelemetry.io/collector v0.64.2-0.20221115155901-1550938c18fd
 	go.opentelemetry.io/collector/pdata v0.64.2-0.20221115155901-1550938c18fd
 	go.opentelemetry.io/collector/semconv v0.64.2-0.20221115155901-1550938c18fd
