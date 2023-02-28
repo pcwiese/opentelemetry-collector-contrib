@@ -158,7 +158,7 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/zipkinreceiver v0.64.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/zookeeperreceiver v0.64.0
 	github.com/prometheus/prometheus v1.8.2-0.20220303173753-edfe657b5405
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	go.opentelemetry.io/collector v0.64.2-0.20221115155901-1550938c18fd
 	go.opentelemetry.io/collector/exporter/loggingexporter v0.64.2-0.20221115155901-1550938c18fd
 	go.opentelemetry.io/collector/exporter/otlpexporter v0.64.2-0.20221115155901-1550938c18fd
