@@ -14,7 +14,7 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/cassandraexporter v0.82.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/clickhouseexporter v0.82.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/coralogixexporter v0.82.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter v0.82.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datadogexporter v0.0.0-00010101000000-000000000000
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/datasetexporter v0.82.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/dynatraceexporter v0.82.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/exporter/elasticsearchexporter v0.82.0
@@ -66,7 +66,7 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/extension/storage v0.82.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/attributesprocessor v0.82.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/cumulativetodeltaprocessor v0.82.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/processor/datadogprocessor v0.82.0
+	github.com/open-telemetry/opentelemetry-collector-contrib/processor/datadogprocessor v0.0.0-00010101000000-000000000000
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/deltatorateprocessor v0.82.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/filterprocessor v0.82.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/processor/groupbyattrsprocessor v0.82.0
@@ -661,7 +661,7 @@ require (
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/oauth2 v0.10.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect
-	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/term v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
