@@ -300,8 +300,8 @@ go.opentelemetry.io/collector v0.88.1-0.20231026220224-6405e152a2d9/go.mod h1:5i
 go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9 h1:t9GCaQDZ1MDBjEAC1Y7NvwiqvVppK6ckAfrUEAlFioA=
 go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9/go.mod h1:4utKxz4Lilym3SPxNXJHosdaTjT1aQxI+TCmnJO54pU=
 go.opentelemetry.io/collector/config/confignet v0.88.0 h1:CbVZQpWC8Bm/BKo3x2mnQZVdQKClU0gCa6SVbRCc930=
-go.opentelemetry.io/collector/config/configtelemetry v0.88.1-0.20231026220224-6405e152a2d9 h1:4WPy3qE1lJE1LZE7t1kAj1XSZN85w68JknZO5Uo00vw=
-go.opentelemetry.io/collector/config/configtelemetry v0.88.1-0.20231026220224-6405e152a2d9/go.mod h1:+LAXM5WFMW/UbTlAuSs6L/W72WC+q8TBJt/6z39FPOU=
+go.opentelemetry.io/collector/config/configtelemetry v0.93.0 h1:s+J/zYXc0zRi346Dz4r5ynTPyI5wRtp+JrSyrSBSiSY=
+go.opentelemetry.io/collector/config/configtelemetry v0.93.0/go.mod h1:2XLhyR/GVpWeZ2K044vCmrvH/d4Ewt0aD/y46avZyMU=
 go.opentelemetry.io/collector/confmap v0.88.1-0.20231026220224-6405e152a2d9 h1:JKFChlNpigR1Q4hZUjDU2sB2VuQ+RigAh7oOQfdcaiQ=
 go.opentelemetry.io/collector/confmap v0.88.1-0.20231026220224-6405e152a2d9/go.mod h1:CSJlMk1KRZloXAygpiPeCLpuQiLVDEZYbGsGHIKHeUg=
 go.opentelemetry.io/collector/connector v0.88.1-0.20231026220224-6405e152a2d9 h1:Anbij6psOWt/2Und9/JBCac3tOnW3+Tj5nqMF9mRBco=
@@ -362,7 +362,7 @@ go.opentelemetry.io/otel/trace v1.19.0 h1:DFVQmlVbfVeOuBRrwdtaehRrWiL1JoVs9CPIQ1
 go.opentelemetry.io/otel/trace v1.19.0/go.mod h1:mfaSyvGyEJEI0nyV2I4qhNQnbBOUUmYZpYojqMnX2vo=
 go.opentelemetry.io/proto/otlp v1.0.0 h1:T0TX0tmXU8a3CbNXzEKGeU5mIVOdf0oykP+u2lIVU/I=
 go.opentelemetry.io/proto/otlp v1.0.0/go.mod h1:Sy6pihPLfYHkr3NkUbEhGHFhINUSI/v80hjKIs5JXpM=
-go.uber.org/goleak v1.2.1 h1:NBol2c7O1ZokfZ0LEU9K6Whx/KnwvepVetCUhtKja4A=
+go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=
 go.uber.org/multierr v1.11.0/go.mod h1:20+QtiLqy0Nd6FdQB9TLXag12DsQkrbs3htMFfDN80Y=
 go.uber.org/zap v1.26.0 h1:sI7k6L95XOKS281NhVKOFCUNIvv9e0w4BF8N3u+tCRo=
