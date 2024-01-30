@@ -137,8 +137,8 @@ go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9 h1
 go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9/go.mod h1:4utKxz4Lilym3SPxNXJHosdaTjT1aQxI+TCmnJO54pU=
 go.opentelemetry.io/collector/config/configauth v0.88.1-0.20231026220224-6405e152a2d9 h1:/miLBOHQlxspauNzKacbukT861aW8vgkG6DYjc6i7YA=
 go.opentelemetry.io/collector/config/configauth v0.88.1-0.20231026220224-6405e152a2d9/go.mod h1:iMPoqAeGB9UScF/sugPF8xcuctlhx8jFK2jAmzDn/1E=
-go.opentelemetry.io/collector/config/configcompression v0.88.1-0.20231026220224-6405e152a2d9 h1:5cqU6jeFGjqSrL5RsDSxrQe7vTIICeyoxATY1J4mUvc=
-go.opentelemetry.io/collector/config/configcompression v0.88.1-0.20231026220224-6405e152a2d9/go.mod h1:LaavoxZsro5lL7qh1g9DMifG0qixWPEecW18Qr8bpag=
+go.opentelemetry.io/collector/config/configcompression v0.93.0 h1:mF9faTs/nU0Uceb+T1kqnUnfrOMqC1hABoFb7nai7Ig=
+go.opentelemetry.io/collector/config/configcompression v0.93.0/go.mod h1:fA36AZC/Qcyl+HvMnvFZuV/iUWGQJrchimmk+qYWuMM=
 go.opentelemetry.io/collector/config/confighttp v0.88.1-0.20231026220224-6405e152a2d9 h1:jEEupxkBYPlKo4uA/9s7mrN9d2iZQ5hTPIQpOelxaiw=
 go.opentelemetry.io/collector/config/confighttp v0.88.1-0.20231026220224-6405e152a2d9/go.mod h1:bmzLcdPexlRvI7a+56eGqZOWhMYAMf+F0h+HLzrpv6w=
 go.opentelemetry.io/collector/config/configopaque v0.88.1-0.20231026220224-6405e152a2d9 h1:YwkklGD3FSAp9QAmkFwzjRLxYKdTGp61s0ZuIpFQSyM=
@@ -180,7 +180,7 @@ go.opentelemetry.io/otel/trace v1.19.0 h1:DFVQmlVbfVeOuBRrwdtaehRrWiL1JoVs9CPIQ1
 go.opentelemetry.io/otel/trace v1.19.0/go.mod h1:mfaSyvGyEJEI0nyV2I4qhNQnbBOUUmYZpYojqMnX2vo=
 go.uber.org/atomic v1.10.0 h1:9qC72Qh0+3MqyJbAn8YU5xVq1frD8bn3JtD2oXtafVQ=
 go.uber.org/atomic v1.10.0/go.mod h1:LUxbIzbOniOlMKjJjyPfpl4v+PKK2cNJn91OQbhoJI0=
-go.uber.org/goleak v1.2.1 h1:NBol2c7O1ZokfZ0LEU9K6Whx/KnwvepVetCUhtKja4A=
+go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=
 go.uber.org/multierr v1.11.0/go.mod h1:20+QtiLqy0Nd6FdQB9TLXag12DsQkrbs3htMFfDN80Y=
 go.uber.org/zap v1.26.0 h1:sI7k6L95XOKS281NhVKOFCUNIvv9e0w4BF8N3u+tCRo=
