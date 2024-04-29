@@ -13,7 +13,7 @@ require (
 	go.opentelemetry.io/collector/extension/auth v0.88.1-0.20231026220224-6405e152a2d9
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.26.0
-	golang.org/x/oauth2 v0.13.0
+	golang.org/x/oauth2 v0.19.0
 	google.golang.org/grpc v1.59.0
 )
 
@@ -51,7 +51,6 @@ require (
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
-	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
