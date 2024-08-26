@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/cenkalti/backoff/v4 v4.2.1
 	github.com/elastic/go-elasticsearch/v7 v7.17.10
-	github.com/elastic/go-structform v0.0.10
+	github.com/elastic/go-structform v0.0.12
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.88.0
 	github.com/stretchr/testify v1.8.4
