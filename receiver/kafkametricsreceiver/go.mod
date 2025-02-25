@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/IBM/sarama v1.41.3
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/kafka v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.88.0
