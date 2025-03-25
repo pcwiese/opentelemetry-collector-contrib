@@ -1,6 +1,7 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/prometheusreceiver
 
 go 1.20
+toolchain go1.24.1
 
 require (
 	github.com/go-kit/log v0.2.1
@@ -12,7 +13,7 @@ require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/prometheus v0.88.0
 	github.com/prometheus/common v0.45.0
 	github.com/prometheus/prometheus v0.47.2
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/confmap v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/consumer v0.88.1-0.20231026220224-6405e152a2d9
@@ -23,7 +24,7 @@ require (
 	go.opentelemetry.io/collector/processor v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/processor/batchprocessor v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/receiver v0.88.1-0.20231026220224-6405e152a2d9
-	go.opentelemetry.io/collector/semconv v0.88.1-0.20231026220224-6405e152a2d9
+	go.opentelemetry.io/collector/semconv v0.122.1
 	go.uber.org/zap v1.26.0
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/yaml.v2 v2.4.0
