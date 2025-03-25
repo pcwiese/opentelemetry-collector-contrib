@@ -1,6 +1,7 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/aerospikereceiver
 
 go 1.20
+toolchain go1.24.1
 
 require (
 	github.com/aerospike/aerospike-client-go/v6 v6.13.0
@@ -8,11 +9,11 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.88.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	github.com/testcontainers/testcontainers-go v0.26.0
 	go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9
-	go.opentelemetry.io/collector/config/configopaque v0.88.1-0.20231026220224-6405e152a2d9
-	go.opentelemetry.io/collector/config/configtls v0.88.1-0.20231026220224-6405e152a2d9
+	go.opentelemetry.io/collector/config/configopaque v1.28.1
+	go.opentelemetry.io/collector/config/configtls v1.28.1
 	go.opentelemetry.io/collector/confmap v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/consumer v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0017.0.20231026220224-6405e152a2d9
@@ -35,7 +36,7 @@ require (
 	github.com/docker/distribution v2.8.2+incompatible // indirect
 	github.com/docker/docker v24.0.7+incompatible // indirect
 	github.com/docker/go-units v0.5.0 // indirect
-	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -67,7 +68,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.23.9 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64 // indirect
@@ -83,7 +84,7 @@ require (
 	golang.org/x/mod v0.13.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sync v0.4.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/sys v0.14.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/tools v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
