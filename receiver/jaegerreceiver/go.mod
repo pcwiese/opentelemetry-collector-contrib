@@ -1,6 +1,6 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/jaegerreceiver
 
-go 1.20
+go 1.23.0
 
 require (
 	github.com/apache/thrift v0.19.0
@@ -8,7 +8,7 @@ require (
 	github.com/jaegertracing/jaeger v1.48.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/jaeger v0.88.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/config/configgrpc v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/config/confighttp v0.88.1-0.20231026220224-6405e152a2d9
@@ -19,7 +19,7 @@ require (
 	go.opentelemetry.io/collector/featuregate v1.0.0-rcv0017.0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0017.0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/receiver v0.88.1-0.20231026220224-6405e152a2d9
-	go.opentelemetry.io/collector/semconv v0.88.1-0.20231026220224-6405e152a2d9
+	go.opentelemetry.io/collector/semconv v0.128.0
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.26.0
 	golang.org/x/net v0.17.0
