@@ -1,6 +1,6 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/cmd/configschema
 
-go 1.20
+go 1.23.0
 
 require (
 	github.com/fatih/structtag v1.2.0
@@ -12,7 +12,7 @@ require (
 	go.opentelemetry.io/collector/config/configtls v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/otelcol v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/receiver/otlpreceiver v0.88.1-0.20231026220224-6405e152a2d9
-	golang.org/x/mod v0.13.0
+	golang.org/x/mod v0.25.0
 	golang.org/x/text v0.13.0
 	gopkg.in/yaml.v2 v2.4.0
 )
