@@ -1,16 +1,16 @@
 // Deprecated: The Dynatrace metrics exporter is deprecated. After the end of 2023, no support, updates, or compatibility with newer OTel versions will be provided/guaranteed. See https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/23992 for more details.
 module github.com/open-telemetry/opentelemetry-collector-contrib/exporter/dynatraceexporter
 
-go 1.20
+go 1.24
 
 require (
 	github.com/dynatrace-oss/dynatrace-metric-utils-go v0.5.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/resourcetotelemetry v0.88.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/config/confighttp v0.88.1-0.20231026220224-6405e152a2d9
-	go.opentelemetry.io/collector/config/configopaque v0.88.1-0.20231026220224-6405e152a2d9
+	go.opentelemetry.io/collector/config/configopaque v1.40.0
 	go.opentelemetry.io/collector/config/configtls v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/confmap v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/consumer v0.88.1-0.20231026220224-6405e152a2d9
