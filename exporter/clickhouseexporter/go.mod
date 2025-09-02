@@ -1,14 +1,14 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/exporter/clickhouseexporter
 
-go 1.20
+go 1.24
 
 require (
 	github.com/ClickHouse/clickhouse-go/v2 v2.15.0
 	github.com/cenkalti/backoff/v4 v4.2.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.88.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9
-	go.opentelemetry.io/collector/config/configopaque v0.88.1-0.20231026220224-6405e152a2d9
+	go.opentelemetry.io/collector/config/configopaque v1.40.0
 	go.opentelemetry.io/collector/confmap v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/exporter v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0017.0.20231026220224-6405e152a2d9
