@@ -8,7 +8,7 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.88.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.11.1
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0017.0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/semconv v0.88.1-0.20231026220224-6405e152a2d9
