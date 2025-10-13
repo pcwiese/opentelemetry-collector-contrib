@@ -1,12 +1,12 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/extension/storage
 
-go 1.20
+go 1.23
 
 require (
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/mattn/go-sqlite3 v1.14.17
-	github.com/stretchr/testify v1.8.4
-	go.etcd.io/bbolt v1.3.8
+	github.com/stretchr/testify v1.10.0
+	go.etcd.io/bbolt v1.4.3
 	go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/confmap v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/extension v0.88.1-0.20231026220224-6405e152a2d9
@@ -40,7 +40,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/grpc v1.59.0 // indirect
