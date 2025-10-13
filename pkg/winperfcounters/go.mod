@@ -1,10 +1,10 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/pkg/winperfcounters
 
-go 1.20
+go 1.24.0
 
 require (
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/sys v0.13.0
+	golang.org/x/sys v0.37.0
 )
 
 require (
