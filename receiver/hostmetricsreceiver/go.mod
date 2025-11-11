@@ -1,14 +1,14 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/hostmetricsreceiver
 
-go 1.20
+go 1.24.0
 
 require (
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/leoluk/perflib_exporter v0.2.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/filter v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/pdatatest v0.88.0
-	github.com/prometheus/procfs v0.11.1
+	github.com/prometheus/procfs v0.19.2
 	github.com/shirou/gopsutil/v3 v3.23.9
 	github.com/stretchr/testify v1.8.4
 	github.com/yusufpapurcu/wmi v1.2.3
@@ -21,7 +21,7 @@ require (
 	go.opentelemetry.io/collector/semconv v0.88.1-0.20231026220224-6405e152a2d9
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.26.0
-	golang.org/x/sys v0.13.0
+	golang.org/x/sys v0.37.0
 )
 
 require (
