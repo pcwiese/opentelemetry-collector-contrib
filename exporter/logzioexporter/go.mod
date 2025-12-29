@@ -1,6 +1,6 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/exporter/logzioexporter
 
-go 1.20
+go 1.23
 
 require (
 	github.com/hashicorp/go-hclog v1.5.0
@@ -19,7 +19,7 @@ require (
 	go.opentelemetry.io/collector/semconv v0.88.1-0.20231026220224-6405e152a2d9
 	go.uber.org/zap v1.26.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.36.11
 )
 
 require (
