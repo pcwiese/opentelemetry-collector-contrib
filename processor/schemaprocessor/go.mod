@@ -1,16 +1,16 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/processor/schemaprocessor
 
-go 1.20
+go 1.24.0
 
 require (
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/config/confighttp v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/confmap v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/consumer v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0017.0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/processor v0.88.1-0.20231026220224-6405e152a2d9
-	go.opentelemetry.io/otel/schema v0.0.7
+	go.opentelemetry.io/otel/schema v0.0.14
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.26.0
 )
