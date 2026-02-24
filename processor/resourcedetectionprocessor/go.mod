@@ -1,19 +1,19 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/processor/resourcedetectionprocessor
 
-go 1.20
+go 1.24.0
 
 require (
-	cloud.google.com/go/compute/metadata v0.2.3
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.20.0
+	cloud.google.com/go/compute/metadata v0.9.0
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.31.0
 	github.com/aws/aws-sdk-go v1.46.7
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/hashicorp/consul/api v1.25.1
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/aws/ecsutil v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/k8sconfig v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/metadataproviders v0.88.0
 	github.com/shirou/gopsutil/v3 v3.23.9
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/config/confighttp v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/config/configopaque v0.88.1-0.20231026220224-6405e152a2d9
@@ -31,7 +31,6 @@ require (
 )
 
 require (
-	cloud.google.com/go/compute v1.23.0 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/Showmax/go-fqdn v1.0.0 // indirect
@@ -92,7 +91,7 @@ require (
 	github.com/rs/cors v1.10.1 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
@@ -112,7 +111,7 @@ require (
 	golang.org/x/exp v0.0.0-20230711023510-fffb14384f22 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/oauth2 v0.13.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/term v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
