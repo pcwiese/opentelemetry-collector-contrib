@@ -1,10 +1,10 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/exporter/prometheusremotewriteexporter
 
-go 1.20
+go 1.23
 
 require (
 	github.com/cenkalti/backoff/v4 v4.2.1
-	github.com/fsnotify/fsnotify v1.7.0
+	github.com/fsnotify/fsnotify v1.10.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/snappy v0.0.4
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.88.0
