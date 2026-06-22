@@ -3,11 +3,11 @@
 
 module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/solacereceiver
 
-go 1.20
+go 1.25
 
 require (
-	github.com/Azure/go-amqp v1.0.2
-	github.com/stretchr/testify v1.8.4
+	github.com/Azure/go-amqp v1.7.0
+	github.com/stretchr/testify v1.11.1
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/config/configopaque v0.88.1-0.20231026220224-6405e152a2d9
