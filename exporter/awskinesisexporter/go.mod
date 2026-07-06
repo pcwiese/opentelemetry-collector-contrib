@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.43
 	github.com/aws/aws-sdk-go-v2/service/kinesis v1.20.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.23.2
-	github.com/cenkalti/backoff/v4 v4.2.1
+	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/gogo/protobuf v1.3.2
 	github.com/google/uuid v1.4.0
 	github.com/jaegertracing/jaeger v1.48.0
