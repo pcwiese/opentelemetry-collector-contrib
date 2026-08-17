@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/aws/aws-sdk-go v1.46.7
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.12.0
 	go.uber.org/zap v1.26.0
 	k8s.io/api v0.28.3
 	k8s.io/apimachinery v0.28.3
@@ -34,7 +34,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
