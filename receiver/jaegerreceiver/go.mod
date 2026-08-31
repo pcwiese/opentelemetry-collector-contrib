@@ -1,6 +1,6 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/jaegerreceiver
 
-go 1.20
+go 1.25.0
 
 require (
 	github.com/apache/thrift v0.19.0
@@ -8,11 +8,11 @@ require (
 	github.com/jaegertracing/jaeger v1.48.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/jaeger v0.88.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/config/configgrpc v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/config/confighttp v0.88.1-0.20231026220224-6405e152a2d9
-	go.opentelemetry.io/collector/config/confignet v0.88.1-0.20231026220224-6405e152a2d9
+	go.opentelemetry.io/collector/config/confignet v1.65.0
 	go.opentelemetry.io/collector/config/configtls v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/confmap v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/consumer v0.88.1-0.20231026220224-6405e152a2d9
@@ -28,6 +28,7 @@ require (
 
 require (
 	cloud.google.com/go/compute/metadata v0.2.4-0.20230617002413-005d2dfb6b68 // indirect
+	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
