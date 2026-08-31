@@ -1,14 +1,14 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/receiver/wavefrontreceiver
 
-go 1.20
+go 1.25.0
 
 require (
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/carbonreceiver v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/receiver/collectdreceiver v0.0.0-00010101000000-000000000000
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/collector/component v0.88.1-0.20231026220224-6405e152a2d9
-	go.opentelemetry.io/collector/config/confignet v0.88.1-0.20231026220224-6405e152a2d9
+	go.opentelemetry.io/collector/config/confignet v1.65.0
 	go.opentelemetry.io/collector/confmap v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/consumer v0.88.1-0.20231026220224-6405e152a2d9
 	go.opentelemetry.io/collector/pdata v1.0.0-rcv0017.0.20231026220224-6405e152a2d9
@@ -16,6 +16,7 @@ require (
 )
 
 require (
+	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
