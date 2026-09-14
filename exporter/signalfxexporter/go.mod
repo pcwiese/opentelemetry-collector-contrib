@@ -1,10 +1,10 @@
 module github.com/open-telemetry/opentelemetry-collector-contrib/exporter/signalfxexporter
 
-go 1.20
+go 1.22.0
 
 require (
 	github.com/cenkalti/backoff/v4 v4.2.1
-	github.com/gobwas/glob v0.2.3
+	github.com/gobwas/glob v1.0.0
 	github.com/gogo/protobuf v1.3.2
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.88.0
 	github.com/open-telemetry/opentelemetry-collector-contrib/internal/coreinternal v0.88.0
